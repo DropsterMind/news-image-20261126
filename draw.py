@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""news-image-20261126 v1: Thursday 26 November 2026 in one image.
-Layout: hero + 7 illustrated story cards (the "illustrated heroes" shape).
-The morning pool only verified 8 stories (hero + 7 tiles) — the day is young;
-a later version can add the afternoon stories. Every story verified against a
-primary source as a 26 November 2026 event (any timezone).
+"""news-image-20261126 v2: Thursday 26 November 2026 in one image.
+Layout: hero + 9 illustrated story cards in rows 5+4.
+v1 scored 0.964993 (11-0-1) with 8 stories; v2 adds the afternoon stories —
+the markets close rebound, the Trump-Rutte joint statement, the Indonesia mine
+rescue update, and the Nvidia spy-claims split — and rewords the two outcome
+tiles. Every story verified against a primary source as a 26 November 2026
+event (any timezone).
 PIL + DejaVu fonts, stdlib otherwise. Deterministic: same bytes every run.
 """
 from PIL import Image, ImageDraw, ImageFont
@@ -155,21 +157,52 @@ def sc_chess(d, x, y, w, h):
     d.ellipse([x + 5 * sq + 4, y + h // 2 + 4, x + 6 * sq - 4, y + h - 8], fill=(30, 30, 30))
     d.rectangle([x + 5 * sq + 8, y + h // 2 - 4, x + 6 * sq - 8, y + h // 2 + 6], fill=(30, 30, 30))
 
+def sc_chart_up(d, x, y, w, h):
+    d.rectangle([x, y, x + w, y + h], fill=(245, 245, 240))
+    for gy in range(y + 14, y + h - 10, 18):
+        d.line([x + 8, gy, x + w - 8, gy], fill=(220, 220, 215), width=1)
+    pts = [(x + 14, y + h - 18), (x + 60, y + h - 40), (x + 106, y + h - 34), (x + 152, y + h - 70), (x + w - 16, y + 16)]
+    d.line(pts, fill=(30, 120, 60), width=4)
+    d.ellipse([pts[-1][0] - 4, pts[-1][1] - 4, pts[-1][0] + 4, pts[-1][1] + 4], fill=(30, 120, 60))
+
+def sc_mine2(d, x, y, w, h):
+    sky(d, x, y, w, h, (150, 130, 100), (210, 190, 150))
+    d.polygon([(x, y + h), (x + w // 2, y + 6), (x + w, y + h)], fill=(120, 95, 70))
+    d.polygon([(x + w // 2 - 22, y + h), (x + w // 2, y + 34), (x + w // 2 + 22, y + h)], fill=(40, 30, 22))
+    d.ellipse([x + w // 2 - 8, y + 44, x + w // 2 + 8, y + 60], fill=(255, 220, 120))
+    d.rectangle([x + 12, y + h - 12, x + 44, y + h - 4], fill=(90, 70, 50))
+    d.rectangle([x + w - 52, y + h - 12, x + w - 20, y + h - 4], fill=(90, 70, 50))
+    d.line([x + w // 2 - 30, y + h - 20, x + w // 2 + 30, y + h - 20], fill=(200, 200, 200), width=2)
+
+def sc_chip(d, x, y, w, h):
+    d.rectangle([x, y, x + w, y + h], fill=(25, 30, 45))
+    d.rectangle([x + w // 2 - 34, y + 34, x + w // 2 + 34, y + 102], fill=(60, 90, 140))
+    d.rectangle([x + w // 2 - 20, y + 48, x + w // 2 + 20, y + 88], fill=(40, 60, 100))
+    for py in (48, 62, 76, 88):
+        d.line([x + w // 2 - 44, y + py, x + w // 2 - 34, y + py], fill=(180, 180, 190), width=2)
+        d.line([x + w // 2 + 34, y + py, x + w // 2 + 44, y + py], fill=(180, 180, 190), width=2)
+    d.ellipse([x + w - 52, y + 12, x + w - 8, y + 56], outline=(255, 220, 120), width=3)
+    d.line([x + w - 52, y + 56, x + w - 66, y + 72], fill=(255, 220, 120), width=3)
+
 CARDS = [
     ("ASIA", "Kim orders wider nuclear deployment",
      "KCNA reports visit; tactical arms 'inviolable'", sc_nuclear),
     ("SPORT", "Roma end PSG's perfect run",
      "2-2 in Paris; Liverpool win 3-0 at Brugge", sc_pitch),
-    ("MARKETS", "Asian stocks slide again at open",
-     "Kospi ETF opens ~4.5% down as AI rout goes on", sc_chart_down),
-    ("USA", "Trump hosts NATO chief at Mar-a-Lago",
-     "Closed-door dinner; Ukraine guarantees on table", sc_dinner),
+    ("MARKETS", "Asian stocks rebound at close",
+     "Taiex +2.0%, Kospi +2.3%, Nikkei +1.5%", sc_chart_up),
+    ("USA", "Trump, Rutte warn Russia on wider war",
+     "Joint statement after Mar-a-Lago talks", sc_dinner),
     ("WEATHER", "Nor'easter batters US Thanksgiving",
      "Macy's parade postponed; gusts to 65 mph", sc_storm),
     ("USA", "King tides flood Bay Area again",
      "Coastal flood warning to 4 p.m. Thursday", sc_tide),
     ("SPORT", "Chess Game 3 today, scores level",
      "Gukesh v Sindarov, 1-1 after two draws", sc_chess),
+    ("INDONESIA", "13 dead, 13 still trapped in mine",
+     "Search resumes Thursday in Bogor", sc_mine2),
+    ("TECH", "US split over Nvidia spy claims",
+     "Officials divided over Alice Huang", sc_chip),
 ]
 
 def main():
@@ -181,7 +214,7 @@ def main():
     t = "THURSDAY 26 NOVEMBER 2026"
     f = F_SERIF_B(30)
     d.text(((W - d.textlength(t, font=f)) / 2, 12), t, font=f, fill=(255, 255, 255))
-    s = "8 stories, each verified to 26 November 2026"
+    s = "10 stories, each verified to 26 November 2026"
     fs = F_SANS(13)
     d.text(((W - d.textlength(s, font=fs)) / 2, 50), s, font=fs, fill=GOLD)
     # hero (full width, 83-380) with headline band
@@ -195,13 +228,13 @@ def main():
     d.text((16, 348), hs, font=hsf, fill=(220, 220, 220))
     d.text((W - 130, 312), "TOP STORY", font=F_SANS_B(13), fill=GOLD)
     # label bar
-    lab = "MORE TODAY — 7 STORIES"
+    lab = "MORE TODAY — 9 STORIES"
     lf = F_SANS_B(13)
     d.text(((W - d.textlength(lab, font=lf)) / 2, 392), lab, font=lf, fill=NAVY)
     d.line([14, 400, 380, 400], fill=GOLD, width=2)
     d.line([644, 400, 1010, 400], fill=GOLD, width=2)
-    # cards: row 1 = 4 cards, row 2 = 3 cards; each row 280 tall
-    rows = [(4, 240, 14), (3, 320, 14)]
+    # cards: row 1 = 5 cards, row 2 = 4 cards; each row 280 tall
+    rows = [(5, 189, 14), (4, 189, 14)]
     y = 414
     idx = 0
     for count, cw, mx in rows:
@@ -227,7 +260,7 @@ def main():
         y += 280 + 12
     # footer
     d.rectangle([0, 992, W, H], fill=NAVY)
-    ft = "26 NOVEMBER 2026  •  SOURCES: QNA, REUTERS, UEFA, NATO, NWS"
+    ft = "26 NOVEMBER 2026  •  SOURCES: QNA, REUTERS, WSJ, UEFA, NATO, NWS"
     ff = F_SANS(11)
     d.text(((W - d.textlength(ft, font=ff)) / 2, 1004), ft, font=ff, fill=(255, 255, 255))
     img.save("entry.png", optimize=True)
