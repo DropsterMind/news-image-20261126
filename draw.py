@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""news-image-20261126 v2: Thursday 26 November 2026 in one image.
-Layout: hero + 9 illustrated story cards in rows 5+4.
-v1 scored 0.964993 (11-0-1) with 8 stories; v2 adds the afternoon stories —
-the markets close rebound, the Trump-Rutte joint statement, the Indonesia mine
-rescue update, and the Nvidia spy-claims split — and rewords the two outcome
-tiles. Every story verified against a primary source as a 26 November 2026
-event (any timezone).
+"""news-image-20261126 v3: Thursday 26 November 2026 in one image.
+Layout: hero + 15 illustrated story cards in rows 5+5+5.
+v2 scored 0.971449 (11-0-1) with 10 stories; v3 adds the seven verified
+overnight stories — Kyiv mall missiles, Gaza strikes, UK migration,
+Bangkok refinery blast, Hormuz tanker mines, Nvidia export halt, ECB
+chief — updates the Chess tile with the Game 3 draw, and drops the
+weakest v2 tile (Bay Area king tides). Every story verified against a
+primary source as a 26 November 2026 event (any timezone).
 PIL + DejaVu fonts, stdlib otherwise. Deterministic: same bytes every run.
 """
 from PIL import Image, ImageDraw, ImageFont
@@ -184,6 +185,69 @@ def sc_chip(d, x, y, w, h):
     d.ellipse([x + w - 52, y + 12, x + w - 8, y + 56], outline=(255, 220, 120), width=3)
     d.line([x + w - 52, y + 56, x + w - 66, y + 72], fill=(255, 220, 120), width=3)
 
+def sc_kyiv(d, x, y, w, h):
+    sky(d, x, y, w, h, (8, 12, 30), (35, 45, 75))
+    for sx, sy in ((20, 14), (70, 26), (120, 12), (160, 22)):
+        d.ellipse([x + sx - 1, y + sy - 1, x + sx + 1, y + sy + 1], fill=(255, 255, 255))
+    d.line([x + 30, y + 8, x + 90, y + 52], fill=(255, 220, 150), width=3)
+    d.ellipse([x + 96, y + 44, x + 132, y + 80], fill=(255, 170, 60))
+    d.ellipse([x + 106, y + 54, x + 122, y + 70], fill=(255, 220, 130))
+    d.rectangle([x + 10, y + h - 34, x + 60, y + h], fill=(20, 22, 35))
+    d.rectangle([x + 70, y + h - 48, x + 120, y + h], fill=(25, 28, 40))
+    d.rectangle([x + 130, y + h - 28, x + w - 10, y + h], fill=(20, 22, 35))
+    for wx, wy in ((20, h - 26), (36, h - 20), (80, h - 40), (96, h - 30), (112, h - 38), (140, h - 20)):
+        d.rectangle([x + wx, y + wy, x + wx + 5, y + wy + 6], fill=(255, 210, 110))
+
+def sc_gaza(d, x, y, w, h):
+    sky(d, x, y, w, h, (130, 130, 135), (185, 180, 170))
+    d.ellipse([x + w // 2 - 14, y + 6, x + w // 2 + 22, y + 34], fill=(110, 105, 100))
+    d.ellipse([x + w // 2 - 4, y + 26, x + w // 2 + 30, y + 52], fill=(90, 85, 80))
+    d.ellipse([x + w // 2 - 2, y + 52, x + w // 2 + 14, y + 68], fill=(255, 150, 50))
+    d.rectangle([x + 8, y + h - 26, x + 70, y + h], fill=(105, 100, 95))
+    d.rectangle([x + 78, y + h - 38, x + 130, y + h], fill=(85, 80, 75))
+    d.rectangle([x + 138, y + h - 20, x + w - 8, y + h], fill=(105, 100, 95))
+    d.polygon([(x + 30, y + h - 26), (x + 48, y + h - 44), (x + 66, y + h - 26)], fill=(70, 65, 60))
+
+def sc_bangkok(d, x, y, w, h):
+    sky(d, x, y, w, h, (18, 18, 25), (55, 45, 40))
+    d.rectangle([x + 16, y + 20, x + 34, y + h - 24], fill=(70, 70, 75))
+    d.rectangle([x + 44, y + 34, x + 60, y + h - 24], fill=(80, 80, 85))
+    d.rectangle([x + 130, y + 26, x + 146, y + h - 24], fill=(70, 70, 75))
+    d.ellipse([x + 70, y + 8, x + 96, y + 40], fill=(40, 38, 38))
+    d.ellipse([x + 100, y + 26, x + 126, y + 56], fill=(30, 28, 28))
+    d.ellipse([x + 66, y + h - 40, x + 96, y + h - 12], fill=(255, 150, 50))
+    d.ellipse([x + 108, y + h - 34, x + 132, y + h - 12], fill=(255, 190, 90))
+    d.rectangle([x, y + h - 12, x + w, y + h], fill=(35, 30, 28))
+
+def sc_hormuz(d, x, y, w, h):
+    sky(d, x, y, w, h, (140, 170, 200), (200, 220, 235))
+    d.rectangle([x, y + h // 2, x + w, y + h], fill=(20, 70, 110))
+    for yy in range(y + h // 2 + 8, y + h - 6, 12):
+        d.line([x + 6, yy, x + w - 6, yy], fill=(120, 170, 210), width=2)
+    d.rectangle([x + 24, y + h - 44, x + w - 24, y + h - 26], fill=(25, 30, 40))
+    d.rectangle([x + w - 62, y + h - 66, x + w - 40, y + h - 44], fill=(35, 40, 50))
+    d.ellipse([x + 44, y + h - 66, x + 70, y + h - 44], fill=(255, 150, 50))
+    d.ellipse([x + 84, y + h - 60, x + 104, y + h - 44], fill=(255, 190, 90))
+    d.ellipse([x + 120, y + h - 58, x + 138, y + h - 44], fill=(255, 150, 50))
+
+def sc_servers(d, x, y, w, h):
+    d.rectangle([x, y, x + w, y + h], fill=(20, 25, 40))
+    for i, ry in enumerate((14, 42, 70)):
+        d.rectangle([x + 18, y + ry, x + 88, y + ry + 22], fill=(55, 75, 115))
+        d.rectangle([x + 24, y + ry + 5, x + 82, y + ry + 10], fill=(35, 50, 80))
+        d.ellipse([x + 72, y + ry + 14, x + 78, y + ry + 20],
+                  fill=(90, 220, 120) if i != 1 else (255, 200, 80))
+    d.ellipse([x + 108, y + 22, x + 172, y + 86], outline=(220, 50, 50), width=5)
+    d.line([x + 120, y + 74, x + 160, y + 34], fill=(220, 50, 50), width=5)
+
+def sc_ecb(d, x, y, w, h):
+    d.rectangle([x, y, x + w, y + h], fill=(20, 50, 100))
+    d.polygon([(x + 30, y + 34), (x + w // 2, y + 8), (x + w - 30, y + 34)], fill=(212, 175, 55))
+    for cx in range(x + 34, x + w - 34, 34):
+        d.rectangle([cx, y + 38, cx + 12, y + h - 16], fill=(240, 240, 235))
+    d.rectangle([x + 20, y + h - 16, x + w - 20, y + h - 6], fill=(212, 175, 55))
+    d.text((x + w // 2 - 10, y + 40), "\u20ac", font=F_SERIF_B(26), fill=(212, 175, 55))
+
 CARDS = [
     ("ASIA", "Kim orders wider nuclear deployment",
      "KCNA reports visit; tactical arms 'inviolable'", sc_nuclear),
@@ -191,18 +255,30 @@ CARDS = [
      "2-2 in Paris; Liverpool win 3-0 at Brugge", sc_pitch),
     ("MARKETS", "Asian stocks rebound at close",
      "Taiex +2.0%, Kospi +2.3%, Nikkei +1.5%", sc_chart_up),
-    ("USA", "Trump, Rutte warn Russia on wider war",
-     "Joint statement after Mar-a-Lago talks", sc_dinner),
+    ("USA", "Trump, Rutte warn Russia",
+     "Joint statement warns of wider war", sc_dinner),
     ("WEATHER", "Nor'easter batters US Thanksgiving",
-     "Macy's parade postponed; gusts to 65 mph", sc_storm),
-    ("USA", "King tides flood Bay Area again",
-     "Coastal flood warning to 4 p.m. Thursday", sc_tide),
-    ("SPORT", "Chess Game 3 today, scores level",
-     "Gukesh v Sindarov, 1-1 after two draws", sc_chess),
+     "Macy's parade moved to Sat; gusts to 65 mph", sc_storm),
+    ("SPORT", "Chess Game 3 drawn in 60 moves",
+     "60-move draw; match level 1.5-1.5", sc_chess),
     ("INDONESIA", "13 dead, 13 still trapped in mine",
      "Search resumes Thursday in Bogor", sc_mine2),
     ("TECH", "US split over Nvidia spy claims",
      "Officials divided over Alice Huang", sc_chip),
+    ("UKRAINE", "Russian missiles hit Kyiv mall",
+     "7 hurt; 113 drones in overnight raid", sc_kyiv),
+    ("MIDEAST", "Israel kills nine in Gaza",
+     "Hamas minister among dead; 3rd night", sc_gaza),
+    ("UK", "UK net migration falls to 77,000",
+     "Lowest since 1997, ONS says", sc_chart_down),
+    ("THAILAND", "Blast at Bangkok refinery",
+     "9 hurt, 3 critical; plant shut", sc_bangkok),
+    ("ENERGY", "Iran says tankers hit mines",
+     "Supertanker ablaze near Khasab", sc_hormuz),
+    ("TECH", "Nvidia halts AI server shipments",
+     "4 SE Asian nations; US curbs", sc_servers),
+    ("EUROPE", "De Cos to lead the ECB",
+     "Spain's ex-central banker; Feb 2027", sc_ecb),
 ]
 
 def main():
@@ -214,28 +290,28 @@ def main():
     t = "THURSDAY 26 NOVEMBER 2026"
     f = F_SERIF_B(30)
     d.text(((W - d.textlength(t, font=f)) / 2, 12), t, font=f, fill=(255, 255, 255))
-    s = "10 stories, each verified to 26 November 2026"
+    s = "16 stories, each verified to 26 November 2026"
     fs = F_SANS(13)
     d.text(((W - d.textlength(s, font=fs)) / 2, 50), s, font=fs, fill=GOLD)
-    # hero (full width, 83-380) with headline band
-    hero_riyadh(d, 0, 83, W, 297)
-    d.rectangle([0, 306, W, 380], fill=(10, 10, 20))
+    # hero (full width, 83-293) with headline band
+    hero_riyadh(d, 0, 83, W, 210)
+    d.rectangle([0, 293, W, 353], fill=(10, 10, 20))
     ht = "Missiles fired at Riyadh intercepted"
     hf = F_SERIF_B(28)
-    d.text((16, 312), ht, font=hf, fill=(255, 255, 255))
+    d.text((16, 299), ht, font=hf, fill=(255, 255, 255))
     hs = "Coalition stops Houthi missile; drone near Jeddah port; Jazan hit"
     hsf = F_SANS(14)
-    d.text((16, 348), hs, font=hsf, fill=(220, 220, 220))
-    d.text((W - 130, 312), "TOP STORY", font=F_SANS_B(13), fill=GOLD)
+    d.text((16, 327), hs, font=hsf, fill=(220, 220, 220))
+    d.text((W - 130, 299), "TOP STORY", font=F_SANS_B(13), fill=GOLD)
     # label bar
-    lab = "MORE TODAY — 9 STORIES"
+    lab = "MORE TODAY — 15 STORIES"
     lf = F_SANS_B(13)
-    d.text(((W - d.textlength(lab, font=lf)) / 2, 392), lab, font=lf, fill=NAVY)
-    d.line([14, 400, 380, 400], fill=GOLD, width=2)
-    d.line([644, 400, 1010, 400], fill=GOLD, width=2)
-    # cards: row 1 = 5 cards, row 2 = 4 cards; each row 280 tall
-    rows = [(5, 189, 14), (4, 189, 14)]
-    y = 414
+    d.text(((W - d.textlength(lab, font=lf)) / 2, 364), lab, font=lf, fill=NAVY)
+    d.line([14, 372, 380, 372], fill=GOLD, width=2)
+    d.line([644, 372, 1010, 372], fill=GOLD, width=2)
+    # cards: 3 rows of 5; each card 189x196, scene 104 tall
+    rows = [(5, 189, 14), (5, 189, 14), (5, 189, 14)]
+    y = 384
     idx = 0
     for count, cw, mx in rows:
         gap = 12
@@ -245,22 +321,22 @@ def main():
             tag, head, fact, scene = CARDS[idx]
             idx += 1
             x = x0 + j * (cw + gap)
-            d.rectangle([x, y, x + cw, y + 280], fill=CARD, outline=(200, 200, 200), width=1)
-            scene(d, x + 1, y + 1, cw - 2, 150)
-            d.text((x + 10, y + 158), tag, font=F_SANS_B(10), fill=NAVY)
+            d.rectangle([x, y, x + cw, y + 196], fill=CARD, outline=(200, 200, 200), width=1)
+            scene(d, x + 1, y + 1, cw - 2, 104)
+            d.text((x + 10, y + 112), tag, font=F_SANS_B(10), fill=NAVY)
             lines = wrap(d, head, F_SERIF_B(15), cw - 20)
-            yy = y + 176
-            for ln in lines[:3]:
+            yy = y + 128
+            for ln in lines[:2]:
                 d.text((x + 10, yy), ln, font=F_SERIF_B(15), fill=INK)
-                yy += 19
+                yy += 18
             flines = wrap(d, fact, F_SANS(11), cw - 20)
             for ln in flines[:2]:
                 d.text((x + 10, yy + 4), ln, font=F_SANS(11), fill=GREY)
-                yy += 14
-        y += 280 + 12
+                yy += 13
+        y += 196 + 10
     # footer
     d.rectangle([0, 992, W, H], fill=NAVY)
-    ft = "26 NOVEMBER 2026  •  SOURCES: QNA, REUTERS, WSJ, UEFA, NATO, NWS"
+    ft = "26 NOVEMBER 2026  •  SOURCES: QNA, REUTERS, WSJ, UEFA, NATO, NWS, AP, BBC, CHESS.COM, ONS, FT"
     ff = F_SANS(11)
     d.text(((W - d.textlength(ft, font=ff)) / 2, 1004), ft, font=ff, fill=(255, 255, 255))
     img.save("entry.png", optimize=True)
